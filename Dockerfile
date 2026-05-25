@@ -15,6 +15,8 @@ WORKDIR /app
 
 COPY . .
 
+RUN mkdir -p /app/database && touch /app/database/database.sqlite
+
 RUN composer install
 
 EXPOSE 10000
