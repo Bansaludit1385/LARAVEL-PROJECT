@@ -5,13 +5,18 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
-    libzip-dev \
     zip \
+    sqlite3 \
+    libsqlite3-dev \
+    libzip-dev \
     nodejs \
     npm
 
 # Install PHP extensions
-RUN docker-php-ext-install zip pdo pdo_sqlite
+RUN docker-php-ext-install \
+    zip \
+    pdo \
+    pdo_sqlite
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -32,11 +37,11 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 # Install Node dependencies
 RUN npm install
 
-# Build Vite assets
+# Build frontend assets
 RUN npm run build
 
-# Ensure build files permissions
-RUN chmod -R 755 public/build
+# Permissions
+RUN chmod -R 775 storage bootstrap/cache public/build database
 
 # Run migrations
 RUN php artisan migrate --force
@@ -50,5 +55,5 @@ RUN php artisan view:clear
 # Expose port
 EXPOSE 10000
 
-# Start Laravel server
+# Start Laravel
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
