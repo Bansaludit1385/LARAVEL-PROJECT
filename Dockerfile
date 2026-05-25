@@ -24,7 +24,9 @@ RUN composer install
 
 RUN npm install
 
-RUN npm run build
+RUN npm run build && ls -la public/build
+
+RUN chmod -R 775 public/build
 
 RUN php artisan migrate --force
 
